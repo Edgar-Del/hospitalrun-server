@@ -128,6 +128,72 @@ const schema = `
     updatedAt: String!
   }
 
+  type LaboratoryTest {
+    _id: ID!
+    name: String!
+    code: String!
+    category: LaboratoryTestCategory!
+    type: LaboratoryTestType!
+    description: String!
+    preparation: String!
+    duration: Int!
+    price: Float!
+    requiresFasting: Boolean!
+    normalRange: NormalRange!
+    hospitalId: String!
+    organizationId: String!
+    status: String!
+    createdAt: String!
+    updatedAt: String!
+  }
+
+  type NormalRange {
+    min: Float!
+    max: Float!
+    unit: String!
+  }
+
+  type LaboratoryOrder {
+    _id: ID!
+    patientId: String!
+    doctorId: String!
+    tests: [LaboratoryOrderTest!]!
+    status: LaboratoryOrderStatus!
+    orderedDate: String!
+    scheduledDate: String
+    completedDate: String
+    totalPrice: Float!
+    hospitalId: String!
+    organizationId: String!
+    createdAt: String!
+    updatedAt: String!
+  }
+
+  type LaboratoryOrderTest {
+    testId: String!
+    priority: String!
+    notes: String
+  }
+
+  type ImagingStudy {
+    _id: ID!
+    patientId: String!
+    doctorId: String!
+    studyType: ImagingStudyType!
+    bodyPart: String!
+    description: String!
+    status: ImagingStudyStatus!
+    scheduledDate: String!
+    completedDate: String
+    findings: String!
+    impression: String!
+    images: [String!]!
+    hospitalId: String!
+    organizationId: String!
+    createdAt: String!
+    updatedAt: String!
+  }
+
   type PrescriptionMedication {
     medicationId: String!
     dosage: String!
@@ -425,6 +491,47 @@ const schema = `
     cancelled
   }
 
+  enum LaboratoryTestCategory {
+    blood
+    urine
+    stool
+    tissue
+    culture
+    imaging
+    cardiology
+    neurology
+  }
+
+  enum LaboratoryTestType {
+    laboratory
+    imaging
+    specialized
+  }
+
+  enum ImagingStudyType {
+    xray
+    ct
+    mri
+    ultrasound
+    endoscopy
+    colonoscopy
+    mammography
+  }
+
+  enum LaboratoryOrderStatus {
+    ordered
+    in_progress
+    completed
+    cancelled
+  }
+
+  enum ImagingStudyStatus {
+    scheduled
+    in_progress
+    completed
+    cancelled
+  }
+
   scalar JSON
 
   type Query {
@@ -457,6 +564,14 @@ const schema = `
     prescriptions(patientId: String, doctorId: String, status: PrescriptionStatus): PrescriptionsResponse!
     prescription(id: ID!): Prescription
     prescriptionsByPatient(patientId: String!): [Prescription!]!
+
+    # Laboratório
+    laboratoryTests(category: LaboratoryTestCategory, type: LaboratoryTestType): [LaboratoryTest!]!
+    laboratoryTest(id: ID!): LaboratoryTest
+    laboratoryOrders(patientId: String, status: LaboratoryOrderStatus): [LaboratoryOrder!]!
+    laboratoryOrder(id: ID!): LaboratoryOrder
+    imagingStudies(patientId: String, studyType: ImagingStudyType, status: ImagingStudyStatus): [ImagingStudy!]!
+    imagingStudy(id: ID!): ImagingStudy
 
     # Relatórios
     dashboard(startDate: String, endDate: String): Dashboard!
@@ -507,6 +622,13 @@ const schema = `
     # Prescrições
     createPrescription(input: CreatePrescriptionInput!): Prescription!
     updatePrescriptionStatus(id: ID!, status: PrescriptionStatus!): Prescription!
+
+    # Laboratório
+    createLaboratoryTest(input: CreateLaboratoryTestInput!): LaboratoryTest!
+    createLaboratoryOrder(input: CreateLaboratoryOrderInput!): LaboratoryOrder!
+    updateLaboratoryOrderStatus(id: ID!, status: LaboratoryOrderStatus!): LaboratoryOrder!
+    createImagingStudy(input: CreateImagingStudyInput!): ImagingStudy!
+    updateImagingStudyReport(id: ID!, findings: String!, impression: String!): ImagingStudy!
 
     # Relatórios
     customReport(metrics: [String!]!, filters: JSON, groupBy: String, sortBy: String): CustomReport!
@@ -701,6 +823,47 @@ const schema = `
     start: String!
     end: String!
     available: Boolean!
+  }
+
+  input CreateLaboratoryTestInput {
+    name: String!
+    code: String!
+    category: LaboratoryTestCategory!
+    type: LaboratoryTestType!
+    description: String!
+    preparation: String!
+    duration: Int!
+    price: Float!
+    requiresFasting: Boolean!
+    normalRange: NormalRangeInput!
+  }
+
+  input NormalRangeInput {
+    min: Float!
+    max: Float!
+    unit: String!
+  }
+
+  input CreateLaboratoryOrderInput {
+    patientId: String!
+    doctorId: String!
+    tests: [LaboratoryOrderTestInput!]!
+    scheduledDate: String
+  }
+
+  input LaboratoryOrderTestInput {
+    testId: String!
+    priority: String!
+    notes: String
+  }
+
+  input CreateImagingStudyInput {
+    patientId: String!
+    doctorId: String!
+    studyType: ImagingStudyType!
+    bodyPart: String!
+    description: String!
+    scheduledDate: String!
   }
 `
 
