@@ -17,6 +17,10 @@ export default (
     allowedHeaders: ['Content-Type', 'Authorization'],
   })
   fastify.register(fastifyHelmet)
+  
+  // Registrar plugin de autenticação
+  fastify.register(import('./plugins/auth'))
+  
   fastify.register(fastifyAutoload, {
     dir: join(__dirname, 'services'),
   })
